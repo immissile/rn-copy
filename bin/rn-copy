@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const path = require('path')
+const fs = require('fs')
+const chalk = require('chalk')
+const rimraf = require('rimraf')
+const fsextra = require('fs-extra')
+
+program
+  .usage('<dev modules path> [options]')
+  .option('--path', 'print dev and node modules dir path')
+
+program.on('--help', function () {
+  console.log()
+  console.log('  Examples:')
+  console.log()
+  console.log(chalk.gray('    # delete some dev modules in node_modules'))
+  console.log(chalk.gray('    # and copy some dev modules to node_modules'))
+  console.log('    $ rn-copy')
+  console.log()
+  console.log(chalk.gray('    # Use custom dev-modules path'))
+  console.log('    $ rn-copy <dev modules path>')
+  console.log()
+})
+
+program.parse(process.argv)
+
+console.log()
+
+const resolve = dir => path.join(__dirname, '../../', dir || '')
+
+const NODE_MODULES_DIR = resolve(`node_modules`)
+const DEV_MODULES_DIR = program.args[0] || resolve(`dev-modules`)
+
+if (!fs.existsSync(NODE_MODULES_DIR)) {
+  console.log(
+    chalk.yellow.bold(`node_modules`),
+    chalk.yellow(`not exists, Install dependencies first.\n`)
+  )
+  console.log(` `, chalk.gray(NODE_MODULES_DIR))
+  console.log()
+  process.exit(0)
+}
+
+if (!fs.existsSync(DEV_MODULES_DIR)) {
+  console.log(
+    chalk.yellow.bold(`dev-modules`),
+    chalk.yellow(`not exists.\n`)
+  )
+  console.log(` `, chalk.gray(DEV_MODULES_DIR))
+  console.log()
+  process.exit(0)
+}
+
+let devModules = fs.readdirSync(DEV_MODULES_DIR)
+devModules.forEach(dir => {
+  let devModule = path.join(DEV_MODULES_DIR, dir)
+  let nodeModule = path.join(NODE_MODULES_DIR, dir)
+  let info = fs.statSync(devModule)
+  if (info.isDirectory()) {
+    rimraf.sync(nodeModule)
+    console.log(
+      chalk.green.bold(`RM`),
+      chalk.gray(`node_modules/${dir}`)
+    )
+
+    fsextra.copySync(devModule, nodeModule)
+    console.log(
+      chalk.green.bold(`CP`),
+      chalk.cyan(`dev-modules/${dir}`),
+      chalk.green(` => `),
+      chalk.gray(`node_modules/${dir}`)
+    )
+    console.log()
+  }
+})
+console.log(chalk.white.bgGreen.bold(` DONE `))
+console.log()

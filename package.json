@@ -1,0 +1,20 @@
+{
+  "name": "rn-copy",
+  "version": "1.0.0",
+  "description": "react native dev modules copy plugin",
+  "main": "bin/rn-copy",
+  "bin": "bin/rn-copy",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:immissile/rn-copy.git"
+  },
+  "author": "Missile <shaohualou@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^7.0.0",
+    "rimraf": "^2.6.2"
+  }
+}
